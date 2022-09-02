@@ -14,6 +14,7 @@
 		AEB83C0A28C25934002D9178 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AEB83C0228C25934002D9178 /* LaunchScreen.storyboard */; };
 		AEB83C0B28C25934002D9178 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AEB83C0428C25934002D9178 /* Main.storyboard */; };
 		AEB83C0C28C25934002D9178 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEB83C0628C25934002D9178 /* AppDelegate.swift */; };
+		AEB83C1028C25CA7002D9178 /* CountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEB83C0F28C25CA7002D9178 /* CountModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		AEB83C0528C25934002D9178 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		AEB83C0628C25934002D9178 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AEB83C0728C25934002D9178 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AEB83C0F28C25CA7002D9178 /* CountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +117,7 @@
 		AEB83BFF28C25934002D9178 /* CountOnMe */ = {
 			isa = PBXGroup;
 			children = (
+				AEB83C0E28C25C82002D9178 /* Model */,
 				AEB83C0028C25934002D9178 /* ViewController.swift */,
 				AEB83C0128C25934002D9178 /* Assets.xcassets */,
 				AEB83C0228C25934002D9178 /* LaunchScreen.storyboard */,
@@ -123,6 +126,14 @@
 				AEB83C0728C25934002D9178 /* Info.plist */,
 			);
 			path = CountOnMe;
+			sourceTree = "<group>";
+		};
+		AEB83C0E28C25C82002D9178 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				AEB83C0F28C25CA7002D9178 /* CountModel.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -258,6 +269,7 @@
 			files = (
 				AEB83C0C28C25934002D9178 /* AppDelegate.swift in Sources */,
 				AEB83C0828C25934002D9178 /* ViewController.swift in Sources */,
+				AEB83C1028C25CA7002D9178 /* CountModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import SimpleCalc
+@testable import CountOnMe
 
 class SimpleCalcTests: XCTestCase {
 
@@ -22,6 +22,10 @@ class SimpleCalcTests: XCTestCase {
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
+        
+        // Given
+        // when
+        // Then
     }
 
     func testPerformanceExample() {
