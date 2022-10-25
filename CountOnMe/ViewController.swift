@@ -12,11 +12,6 @@ class ViewController: UIViewController {
     @IBOutlet weak var textView: UITextView!
     @IBOutlet var numberButtons: [UIButton]!
     
-    var elements: [String] {
-        return textView.text.split(separator: " ").map { "\($0)" }
-    }
-
-    
     var countModel = CountModel()
     
     // Error check computed variables
@@ -28,6 +23,10 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
+    @IBAction func clearAll(_ sender: UIButton){
+        textView.text = ""
+    }
+    
     
     // View actions
     @IBAction func tappedNumberButton(_ sender: UIButton) {
@@ -35,16 +34,20 @@ class ViewController: UIViewController {
             return
         }
         
-        if expressionHaveResult {
+        if countModel.expressionHaveResult(textView: textView) {
             textView.text = ""
         }
         
         textView.text.append(numberText)
     }
     
-    @IBAction func tappedAdditionButton(_ sender: UIButton) {
-        if canAddOperator {
-            textView.text.append(" + ")
+    @IBAction func tappeOperationButton(_ sender: UIButton) {
+        guard let operande = sender.titleLabel?.text else {
+            return
+        }
+        
+        if countModel.canAddOperator(elements: textView.text) {
+            textView.text.append(" "+operande+" ")
         } else {
             let alertVC = UIAlertController(title: "Zéro!", message: "Un operateur est déja mis !", preferredStyle: .alert)
             alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
@@ -52,44 +55,14 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBAction func tappedSubstractionButton(_ sender: UIButton) {
-        if canAddOperator {
-            textView.text.append(" - ")
-        } else {
-            let alertVC = UIAlertController(title: "Zéro!", message: "Un operateur est déja mis !", preferredStyle: .alert)
-            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-            self.present(alertVC, animated: true, completion: nil)
-        }
-    }
-    
-    @IBAction func tappedDividedButton(_ sender: UIButton) {
-        if canAddOperator {
-            textView.text.append(" / ")
-        } else {
-            let alertVC = UIAlertController(title: "Zéro!", message: "Un operateur est déja mis !", preferredStyle: .alert)
-            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-            self.present(alertVC, animated: true, completion: nil)
-        }
-    }
-    
-    @IBAction func tappedMultiplicationionButton(_ sender: UIButton) {
-        if canAddOperator {
-            textView.text.append(" x ")
-        } else {
-            let alertVC = UIAlertController(title: "Zéro!", message: "Un operateur est déja mis !", preferredStyle: .alert)
-            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-            self.present(alertVC, animated: true, completion: nil)
-        }
-    }
-
     @IBAction func tappedEqualButton(_ sender: UIButton) {
-        guard expressionIsCorrect else {
+        guard countModel.canAddOperator(elements: textView.text) else {
             let alertVC = UIAlertController(title: "Zéro!", message: "Entrez une expression correcte !", preferredStyle: .alert)
             alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
             return self.present(alertVC, animated: true, completion: nil)
         }
         
-        guard expressionHaveEnoughElement else {
+        guard countModel.expressionHaveEnoughElement(elements: textView.text) else {
             let alertVC = UIAlertController(title: "Zéro!", message: "Démarrez un nouveau calcul !", preferredStyle: .alert)
             alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
             return self.present(alertVC, animated: true, completion: nil)
@@ -97,15 +70,26 @@ class ViewController: UIViewController {
         
         let textToDisplay = countModel.operation(operation: textView.text)
         
-        var textClean = ""
-        
-        if textToDisplay.truncatingRemainder(dividingBy: 1) == 0 {
-            textClean = String(format: "%.0f",textToDisplay)
-        } else {
-            textClean = String(textToDisplay)
+        switch textToDisplay {
+        case .success(let result):
+            var textClean = ""
+            
+            if result.truncatingRemainder(dividingBy: 1) == 0 {
+                textClean = String(format: "%.0f",result)
+            } else {
+                textClean = String(result)
+            }
+                    
+            self.textView.text.append(" = \(String(textClean))")
+        case .failure(let error):
+            let alertVC = UIAlertController(title: "Error", message: error.message(), preferredStyle: .alert)
+                alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                return self.present(alertVC, animated: true, completion: nil)
         }
-                
-        textView.text.append(" = \(String(textClean))")
+        
+        
+        
+        
         
     }
 

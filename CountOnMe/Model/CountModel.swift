@@ -7,14 +7,13 @@
 //
 
 import Foundation
+import UIKit
 
 class CountModel {
-    
-    /* var elements = [String]()
-    
-    init(elements: [String]) {
-        self.elements = elements
-    } */
+        
+    func splittedString(elements: String)-> [String]{
+        return elements.split(separator: " ").map { "\($0)" }
+    }
     
     func addition(a: Double, b: Double) -> Double {
         return a+b
@@ -28,78 +27,96 @@ class CountModel {
         return a*b
     }
 
-    func divide(a: Double, b: Double) -> Double {
-        return a/b
+    func divide(a: Double, b: Double) -> Result<Double, CustomError> {
+        if(b==0){
+            return .failure(.cantDivideByO)
+        }
+        return .success(a/b)
     }
     
-    func expressionIsCorrect: Bool() {
-        return elements.last != "+" && elements.last != "-" && elements.last != "/" && elements.last != "x"
+    func expressionHaveEnoughElement(elements: String ) -> Bool {
+        return self.splittedString(elements: elements).count >= 3
     }
     
-    func expressionHaveEnoughElement: Bool {
-        return elements.count >= 3
+    func canAddOperator(elements: String ) -> Bool {
+        let splitString = self.splittedString(elements:elements)
+        return splitString.last != "+" && splitString.last != "-" && splitString.last != "/" && splitString.last != "x"
     }
     
-    func canAddOperator: Bool {
-        return elements.last != "+" && elements.last != "-" && elements.last != "/" && elements.last != "x"
-    }
-    
-    func expressionHaveResult: Bool {
+    func expressionHaveResult(textView: UITextView ) -> Bool {
         return textView.text.firstIndex(of: "=") != nil
     }
 
     // MARK: - API
     
-    enum CustomError {
-        case general
+    enum CustomError: Error {
         case cantDivideByO
+        case canAddOperator
+        case haveEnoughElement
+        case isNotDouble
+        func message()-> String{
+            switch self {
+            case .cantDivideByO : return "Can't be divide by 0"
+            case .canAddOperator : return "Operator can't be add"
+            case .haveEnoughElement : return "Don't have enough element to process"
+            case .isNotDouble : return "Value is not double"
+            }
+        }
     }
     
-    func operation(operation: String) -> Double { // Example: operation -> "2 + 4 / 6 X 12 - 3"
-
-        // 1. Tab of operations => [..,..,..]
-        var elements = operation.split(separator: " ").map { "\($0)" }
-         
+    
+    
+    func operation(operation: String) -> Result<Double, CustomError> { // Example: operation -> "2 + 4 / 6 X 12 - 3"
        // ['2', '+', '4', '/', '6', '*', '12', '-', '3']
         // Iterate over operations while an operand still here
-            while elements.count > 1 {
+        var splitString = self.splittedString(elements: operation)
+        while splitString.count > 1 {
                 var i:Int=1
-                if let hasRange = elements.firstIndex(where: {$0 == "/" || $0 == "x"}){
+                if let hasRange = splitString.firstIndex(where: {$0 == "/" || $0 == "x"}){
                     i = hasRange
                 } else {
-                    print("pas de range")
+                    print("No range")
                 }
-                let left = Double(elements[i-1])!
-                let operand = elements[i] // division & multiply prioritaire
-                let right = Double(elements[i+1])!
+                guard let left = Double(splitString[i-1]) else {
+                    return .failure(.isNotDouble)
+                }
+                guard let right = Double(splitString[i+1]) else {
+                    return .failure(.isNotDouble)
+                }
+                
+                let operand = splitString[i] // division & multiply prioritaire
             
                 let result: Double
                 switch operand {
                     case "+": result = self.addition(a: left,b: right)
                     case "-": result = self.substraction(a: left,b: right)
                     case "/":
-                        if(right==0){
-                            print("Impossible de diviser par Zero!")
-                            result = .infinity
-                        }else{
-                            result = self.divide(a: left,b: right)
+                        switch self.divide(a: left,b: right){
+                            case .success(let resultDiv):
+                                result = resultDiv
+                            
+                            case .failure(let error):
+                                return .failure(error)
                         }
                     case "x": result = self.multiply(a: left,b: right)
                 default: fatalError("Unknown operator !")
             }
             
-            elements.removeSubrange(i-1...i+1)
-            elements.insert("\(result)", at: i-1)
-            print(elements)
-        }
-
-
-        // Return
-        guard let total = Double(elements[0]) else {
-            return 0
+            splitString.removeSubrange(i-1...i+1)
+            splitString.insert("\(result)", at: i-1)
+            print(splitString)
         }
         
-        return total
+        guard self.canAddOperator(elements: operation) else {
+            return .failure(.canAddOperator)
+        }
+
+        //Return
+        guard let total = Double(splitString[0]) else {
+            return .failure(.isNotDouble)
+        }
+        
+        return .success(total)
     }
     
 }

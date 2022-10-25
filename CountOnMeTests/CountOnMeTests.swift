@@ -65,8 +65,14 @@ class SimpleCalcTests: XCTestCase {
         // when
         
         let countResutlt = countModel.divide(a: left, b: right)
-        // Then
-        XCTAssertEqual( countResutlt, left/right)
+        
+        switch countResutlt {
+        case .success(let result):
+            XCTAssertEqual( result, left/right)
+        case .failure(_):
+            XCTFail()
+        }
+       
     }
     
     func testDivideZero() {
@@ -82,7 +88,12 @@ class SimpleCalcTests: XCTestCase {
         
         let countResutlt = countModel.divide(a: left, b: right)
         // Then
-        XCTAssertEqual( countResutlt, .infinity)
+        switch countResutlt {
+        case .success(_):
+            XCTFail()
+        case .failure(let error):
+            XCTAssertEqual( error, .cantDivideByO)
+        }
     }
     
     func testSoustraction() {
@@ -102,8 +113,6 @@ class SimpleCalcTests: XCTestCase {
     }
     
     func testOperation() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
         
         // Given
         let stringMock = "2 + 4 / 6 x 12 - 3"
@@ -111,8 +120,45 @@ class SimpleCalcTests: XCTestCase {
         
         // when
         let countResutlt = countModel.operation(operation: stringMock)
-        // Then
-        XCTAssertEqual( countResutlt, 7)
+        
+        switch countResutlt {
+            case .success(let result):
+                // Then
+                XCTAssertEqual( result, 7)
+            case .failure(_):
+                XCTFail()
+        }
+
+    }
+    
+    func testOperateurCorrect(){
+        let stringMock = "2 + 4"
+        let countModel = CountModel()
+        let countResutlt = countModel.canAddOperator(elements: stringMock)
+        
+        XCTAssertEqual( countResutlt, true)
+    }
+    
+    func testHaveEnoughElement(){
+        let stringMock = "2 + 4"
+        let countModel = CountModel()
+        let countResutlt = countModel.expressionHaveEnoughElement(elements: stringMock)
+        XCTAssertEqual( countResutlt, true)
+    }
+    
+    func testCanAddOperator(){
+        let stringMock = "2 + 4"
+        let countModel = CountModel()
+        let countResutlt = countModel.expressionHaveEnoughElement(elements: stringMock)
+        XCTAssertEqual( countResutlt, true)
+    }
+    
+    func testExpressionHaveResult(){
+        let textView = UITextView(frame: CGRect(x: 0.0, y: 0.0, width: 1.0, height: 1.0))
+        textView.text = "2 + 4 = 6"
+        let countModel = CountModel()
+        let countResutlt = countModel.expressionHaveResult(textView: textView)
+        XCTAssertEqual( countResutlt, true)
     }
 
     func testPerformanceExample() {
